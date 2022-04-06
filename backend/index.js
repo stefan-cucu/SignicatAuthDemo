@@ -56,7 +56,7 @@ app.get("/api/session", (req, res) => {
         include: ["name", "date_of_birth"],
         redirectSettings: {
           successUrl:
-            "https://developer.signicat.io/landing-pages/identification-success.html",
+            "http://localhost:3000", // TODO: Change development URL
           abortUrl:
             "https://developer.signicat.io/landing-pages/something-wrong.html",
           errorUrl:
@@ -96,6 +96,7 @@ app.get("/api/session/:sessionId", (req, res) => {
       }
     )
     .then((response) => {
+      console.log(response.data)
       res.send(response.data);
     })
     .catch((error) => {
