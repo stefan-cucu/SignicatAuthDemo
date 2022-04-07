@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { useSessionId } from "../app/hooks";
 
 // Interface for the user slice
 export interface User {
@@ -8,6 +7,7 @@ export interface User {
     lastName: string;
     dateOfBirth: string;
     sessionId: string;
+    expires: string;
     loaded: boolean;
 }
 
@@ -18,15 +18,17 @@ const initialState: User = {
     lastName: "",
     dateOfBirth: "",
     sessionId: "",
+    expires: "",
     loaded: false,
 }
 
 // Async thunk for fetching the user using the session id
 export const fetchUser = createAsyncThunk('user/fetchUser', async (sessionId: string) => {
-    const response = await fetch(`http://localhost:8080/api/session/${sessionId}`); // TO DO: Change development server url
+    const response = await fetch(`/api/session/${sessionId}`); // TO DO: Change development server url
     const user = await response.json();
     return {
         sessionId: sessionId,
+        expires: user.expires,
         ...user.identity,
     };
 });
@@ -42,6 +44,7 @@ const userSlice = createSlice({
             state.lastName = action.payload.lastName;
             state.dateOfBirth = action.payload.dateOfBirth;
             state.sessionId = action.payload.sessionId;
+            state.expires = action.payload.expires;
             state.loaded = true;
         },
         logOut: (state) => {
@@ -50,6 +53,7 @@ const userSlice = createSlice({
             state.lastName = "";
             state.dateOfBirth = "";
             state.sessionId = "";
+            state.expires = "";
             state.loaded = false;
         },
     },
@@ -59,6 +63,8 @@ const userSlice = createSlice({
             state.firstName = action.payload.firstName;
             state.lastName = action.payload.lastName;
             state.dateOfBirth = action.payload.dateOfBirth;
+            state.sessionId = action.payload.sessionId;
+            state.expires = action.payload.expires;
             state.loaded = true;
         }
     }

@@ -4,6 +4,7 @@ import "./index.css";
 import Home from "./view/Home/Home";
 import { store } from "./app/store";
 import { Provider } from "react-redux";
+import SessionExpirationProvider from "./SessionExpirationProvider";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Profile from "./view/Profile/Profile";
@@ -12,12 +13,14 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/abort/" element={<Home error="abort" />} />
-          <Route path="/error/" element={<Home error="error" />} />
-          <Route path="/success/" element={<Profile />} />
-        </Routes>
+        <SessionExpirationProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/abort/" element={<Home error="abort" />} />
+            <Route path="/error/" element={<Home error="error" />} />
+            <Route path="/success/" element={<Profile />} />
+          </Routes>
+        </SessionExpirationProvider>
       </BrowserRouter>
     </Provider>
   </React.StrictMode>,
