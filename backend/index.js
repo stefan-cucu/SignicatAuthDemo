@@ -56,11 +56,11 @@ app.get("/api/session", (req, res) => {
         include: ["name", "date_of_birth"],
         redirectSettings: {
           successUrl:
-            "http://localhost:3000", // TODO: Change development URL
+            "http://localhost:3000/success/", // TODO: Change development URL
           abortUrl:
-            "https://developer.signicat.io/landing-pages/something-wrong.html",
+            "http://localhost:3000/abort/",
           errorUrl:
-            "https://developer.signicat.io/landing-pages/something-wrong.html",
+            "http://localhost:3000/error/",
         },
       },
       {
@@ -72,13 +72,14 @@ app.get("/api/session", (req, res) => {
     )
     .then((response) => {
       // If successful, redirect to signicat authentication page and create a cookie with the session id
-      console.log(response.data.url);
-      res.cookie("SignicatSessionId", response.data.id);
+      res.cookie("SignicatSessionId", response.data.id, {
+        expires: new Date(response.data.expires),
+      });
       res.redirect(response.data.url);
     })
     .catch((error) => {
       // If unsuccessful, return the error 
-      res.send(error);
+      res.redirect('http://localhost:3000/error/');
     });
 });
 

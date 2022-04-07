@@ -7,6 +7,7 @@ export interface User {
     firstName: string;
     lastName: string;
     dateOfBirth: string;
+    sessionId: string;
     loaded: boolean;
 }
 
@@ -16,17 +17,18 @@ const initialState: User = {
     firstName: "",
     lastName: "",
     dateOfBirth: "",
+    sessionId: "",
     loaded: false,
 }
 
 // Async thunk for fetching the user using the session id
-export const fetchUser = createAsyncThunk('user/fetchUser', async () => {
-    const sessionId = useSessionId();
+export const fetchUser = createAsyncThunk('user/fetchUser', async (sessionId: string) => {
     const response = await fetch(`http://localhost:8080/api/session/${sessionId}`); // TO DO: Change development server url
-    console.log(response);
     const user = await response.json();
-    console.log(user.identity);
-    return user.identity;
+    return {
+        sessionId: sessionId,
+        ...user.identity,
+    };
 });
 
 // Configure the user slice
@@ -39,7 +41,17 @@ const userSlice = createSlice({
             state.firstName = action.payload.firstName;
             state.lastName = action.payload.lastName;
             state.dateOfBirth = action.payload.dateOfBirth;
-        }
+            state.sessionId = action.payload.sessionId;
+            state.loaded = true;
+        },
+        logOut: (state) => {
+            state.providerId = "";
+            state.firstName = "";
+            state.lastName = "";
+            state.dateOfBirth = "";
+            state.sessionId = "";
+            state.loaded = false;
+        },
     },
     extraReducers: {
         [fetchUser.fulfilled.type]: (state, action: PayloadAction<User>) => {
@@ -52,7 +64,7 @@ const userSlice = createSlice({
     }
 });
 
-export const { setUser } = userSlice.actions;
+export const { setUser, logOut } = userSlice.actions;
 
 export const getUser = (state : any) => state.user;
 
